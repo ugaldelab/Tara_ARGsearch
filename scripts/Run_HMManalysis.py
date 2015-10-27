@@ -108,7 +108,7 @@ for sample in tara_data:
 
         file_url = "ftp://ftp.sra.ebi.ac.uk/vol1/" + seq_file
 
-        print "##Downloading file %s \n" % file_url
+        print "## Downloading file %s \n" % file_url
 
         #getfile = urllib.URLopener()
         #getfile.retrieve(file_url, output_seq_file)
@@ -117,10 +117,12 @@ for sample in tara_data:
 
         # Unzipping file if fastq
         if seq_type == "fastq":
+
+            print "### Uncompressing file\n"
             subprocess.call(["gunzip", output_seq_file])
 
             base = os.path.basename(output_seq_file)
-            file_prefix = os.path.splitext(base)[0].split(".")[0]
+            file_prefix = os.path.splitext(base)[0]
 
             fastq_filename = sample_folder + "/" + file_prefix + ".fastq"
             output_faa = sample_folder + "/" + file_prefix + ".faa"
@@ -133,12 +135,12 @@ for sample in tara_data:
 
             # Translate sequences
 
-            print "###Running Transeq\n"
+            print "#### Running Transeq\n"
             subprocess.call(["transeq", "-sequence", fastq_filename, "-outseq",
                              output_faa, "-frame", "6", "-clean"])
 
             # Run hmmsearch
-            print "#### Running HMM searches\n"
+            print "##### Running HMM searches\n"
             subprocess.call(["hmmsearch", "--cpu", args.cpus, "--cut_ga", "--tblout", output_hmm, "-o", logfile_hmm,
                              args.hmm_files, output_faa])
 
@@ -157,16 +159,17 @@ for sample in tara_data:
             logfile_hmm = sample_folder + "/" + file_prefix + ".logfile"
 
             # Get number of read on the file
+            print "### Converting sff file\n"
             read_count = SeqIO.convert(output_seq_file, "sff", sff_fastq_name, "fastq")
             summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\n")
 
             # Translate the sequences
-            print "###Running Transeq\n"
+            print "#### Running Transeq\n"
             subprocess.call(["transeq", "-sequence", sff_fastq_name, "-outseq",
                              output_faa, "-frame", "6", "-clean"])
 
             # Run hmmsearch
-            print "#### Running HMM searches\n"
+            print "##### Running HMM searches\n"
             subprocess.call(["hmmsearch", "--cpu", args.cpus, "--cut_ga", "--tblout", output_hmm, "-o", logfile_hmm,
                              args.hmm_files, output_faa])
 
