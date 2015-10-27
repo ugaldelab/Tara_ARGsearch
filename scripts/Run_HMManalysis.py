@@ -172,7 +172,7 @@ for sample in tara_data:
             # Get number of read on the file
             print "### Converting sff file\n"
             read_count = SeqIO.convert(output_seq_file, "sff", sff_fastq_name, "fastq")
-            summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\n")
+            summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\t")
 
             # Translate the sequences
             print "#### Running Transeq\n"
@@ -192,6 +192,7 @@ for sample in tara_data:
                              args.hmm_files, output_faa])
 
             # Delete the files
+            os.remove(output_seq_file)
             os.remove(sff_fastq_name)
             os.remove(output_faa)
 
