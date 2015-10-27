@@ -130,7 +130,14 @@ for sample in tara_data:
             logfile_hmm = sample_folder + "/" + file_prefix + ".logfile"
 
             # Get number of reads on the file
-            read_count = count_fastq_reads(fastq_filename)
+            print "#### Counting records\n"
+            #read_count = count_fastq_reads(fastq_filename)
+
+
+            proc = subprocess.Popen(["wc", "-l", fastq_filename], stdout=subprocess.PIPE)
+            output = proc.stdout.read()
+
+            read_count = int(output.split(" ")[0])/4
             summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\n")
 
             # Translate sequences
