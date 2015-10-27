@@ -9,7 +9,6 @@ The output is the result for the hmmsearch, with the sample label as the file na
 from collections import defaultdict
 import argparse
 import os
-import urllib
 import subprocess
 from Bio import SeqIO
 
@@ -110,8 +109,8 @@ for sample in tara_data:
 
         print "## Downloading file %s \n" % file_url
 
-        #getfile = urllib.URLopener()
-        #getfile.retrieve(file_url, output_seq_file)
+        # getfile = urllib.URLopener()
+        # getfile.retrieve(file_url, output_seq_file)
 
         subprocess.call(["wget", file_url, "-O", output_seq_file])
 
@@ -138,7 +137,7 @@ for sample in tara_data:
             output = proc.stdout.read()
 
             read_count = int(output.split(" ")[0])/4
-            summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\n")
+            summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\t")
 
             # Translate sequences
 
@@ -146,15 +145,20 @@ for sample in tara_data:
             subprocess.call(["transeq", "-sequence", fastq_filename, "-outseq",
                              output_faa, "-frame", "6", "-clean"])
 
+            # Count proteins
+            print "### Counting proteins\n"
+            peptide_count = subprocess.check_output('grep -c ">" ' + output_faa)
+            peptide_count = peptide_count.rstrip()
+            summary_table.write(str(peptide_count) + "\n")
+
             # Run hmmsearch
             print "##### Running HMM searches\n"
-            subprocess.call(["hmmsearch", "--cpu", args.cpus, "--cut_ga", "--tblout", output_hmm, "-o", logfile_hmm,
+            subprocess.call(["hmmsearch", "--cpu", str(args.cpus), "--cut_ga", "--tblout", output_hmm, "-o", logfile_hmm,
                              args.hmm_files, output_faa])
 
             # Delete the files
             os.remove(fastq_filename)
             os.remove(output_faa)
-
 
         elif seq_type == "sff":
             base = os.path.basename(output_seq_file)
@@ -175,9 +179,15 @@ for sample in tara_data:
             subprocess.call(["transeq", "-sequence", sff_fastq_name, "-outseq",
                              output_faa, "-frame", "6", "-clean"])
 
+            # Count proteins
+            print "### Counting proteins\n"
+            peptide_count = subprocess.check_output('grep -c ">" ' + output_faa)
+            peptide_count = peptide_count.rstrip()
+            summary_table.write(str(peptide_count) + "\n")
+
             # Run hmmsearch
             print "##### Running HMM searches\n"
-            subprocess.call(["hmmsearch", "--cpu", args.cpus, "--cut_ga", "--tblout", output_hmm, "-o", logfile_hmm,
+            subprocess.call(["hmmsearch", "--cpu", str(args.cpus), "--cut_ga", "--tblout", output_hmm, "-o", logfile_hmm,
                              args.hmm_files, output_faa])
 
             # Delete the files
