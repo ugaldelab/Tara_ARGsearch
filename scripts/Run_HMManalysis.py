@@ -132,11 +132,10 @@ for sample in tara_data:
             print "#### Counting records\n"
             #read_count = count_fastq_reads(fastq_filename)
 
-
             proc = subprocess.Popen(["wc", "-l", fastq_filename], stdout=subprocess.PIPE)
             output = proc.stdout.read()
 
-            read_count = int(output.split(" ")[0])/4
+            read_count = int(output.split()[0])/4
             summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\t")
 
             # Translate sequences
@@ -147,7 +146,8 @@ for sample in tara_data:
 
             # Count proteins
             print "### Counting proteins\n"
-            peptide_count = subprocess.check_output('grep -c ">" ' + output_faa)
+            query_count = 'grep -c ">" ' + output_faa
+            peptide_count = subprocess.check_output(query_count, shell=True)
             peptide_count = peptide_count.rstrip()
             summary_table.write(str(peptide_count) + "\n")
 
@@ -181,7 +181,8 @@ for sample in tara_data:
 
             # Count proteins
             print "### Counting proteins\n"
-            peptide_count = subprocess.check_output('grep -c ">" ' + output_faa)
+            query_count = 'grep -c ">" ' + output_faa
+            peptide_count = subprocess.check_output(query_count, shell=True)
             peptide_count = peptide_count.rstrip()
             summary_table.write(str(peptide_count) + "\n")
 
