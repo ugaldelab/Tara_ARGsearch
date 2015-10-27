@@ -124,7 +124,7 @@ for sample in tara_data:
             base = os.path.basename(output_seq_file)
             file_prefix = os.path.splitext(base)[0]
 
-            fastq_filename = sample_folder + "/" + file_prefix + ".fastq"
+            fastq_filename = sample_folder + "/" + file_prefix
             output_faa = sample_folder + "/" + file_prefix + ".faa"
             output_hmm = sample_folder + "/" + file_prefix + ".hmmsearch"
             logfile_hmm = sample_folder + "/" + file_prefix + ".logfile"
