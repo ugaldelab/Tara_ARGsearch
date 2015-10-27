@@ -61,6 +61,7 @@ parser.add_argument("-i", "--input_table", type=str,
                     help="Input tabular file with the Tara oceans sample", required=True)
 parser.add_argument("-o", "--output_folder", type=str, help="Output folder", required=True)
 parser.add_argument("-d", "--hmm_files", type=str, help="HMM files to use", required=True)
+parser.add_argument("-c", "--cpus", type=int, help="Number of CPUs to use", required=True)
 
 args = parser.parse_args()
 
@@ -109,8 +110,10 @@ for sample in tara_data:
 
         print "##Downloading file %s \n" % file_url
 
-        getfile = urllib.URLopener()
-        getfile.retrieve(file_url, output_seq_file)
+        #getfile = urllib.URLopener()
+        #getfile.retrieve(file_url, output_seq_file)
+
+        subprocess.call(["wget", file_url, "-O", output_seq_file])
 
         # Unzipping file if fastq
         if seq_type == "fastq":
@@ -136,7 +139,7 @@ for sample in tara_data:
 
             # Run hmmsearch
             print "#### Running HMM searches\n"
-            subprocess.call(["hmmsearch", "--cpu", "4", "--cut_ga", "--tblout", output_hmm, "-o", logfile_hmm,
+            subprocess.call(["hmmsearch", "--cpu", args.cpus, "--cut_ga", "--tblout", output_hmm, "-o", logfile_hmm,
                              args.hmm_files, output_faa])
 
             # Delete the files
@@ -164,7 +167,7 @@ for sample in tara_data:
 
             # Run hmmsearch
             print "#### Running HMM searches\n"
-            subprocess.call(["hmmsearch", "--cpu", "4", "--cut_ga", "--tblout", output_hmm, "-o", logfile_hmm,
+            subprocess.call(["hmmsearch", "--cpu", args.cpus, "--cut_ga", "--tblout", output_hmm, "-o", logfile_hmm,
                              args.hmm_files, output_faa])
 
             # Delete the files
