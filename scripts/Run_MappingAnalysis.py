@@ -94,7 +94,24 @@ for sample in tara_data:
     if not os.path.exists(sample_folder):
         os.makedirs(sample_folder)
 
-    print read_xml(tara_data[sample])
+    fastq_files = list()
+    sff_files = list()
+
+    for entry in read_xml(tara_data[sample]):
+        seq_type, checksum, seq_file = entry
+
+        if seq_type == "sff":
+            print seq_file
+
+        read_pos = 0
+        elif seq_type == "fastq":
+            if read_pos == 0:
+                fastq_files.append[0]
+
+
+
+    #seq_files = [fastq[2] for fastq in read_xml(tara_data[sample])]
+    #print seq_files
 
     # for entry in read_xml(tara_data[sample]):
     #     seq_type, checksum, seq_file = entry
