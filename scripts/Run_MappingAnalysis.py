@@ -1,6 +1,6 @@
 """
 This scripts run the read mapping analysis for the Tara oceans samples.
-The approach is to download each sample file, then use bwa to map the reads to the
+The approach is to download each sample file, then use Bowtie2 to map the reads to the
 Resfinder database, store the results in a new file, and delete the downloaded sequence.
 
 The output is a bam file for the mapped reads
@@ -51,7 +51,7 @@ parser = argparse.ArgumentParser(description=program_description)
 parser.add_argument("-i", "--input_table", type=str,
                     help="Input tabular file with the Tara oceans sample", required=True)
 parser.add_argument("-o", "--output_folder", type=str, help="Output folder", required=True)
-parser.add_argument("-d", "--database_to_map", type=str, help="HMM files to use", required=True)
+parser.add_argument("-d", "--database_to_map", type=str, help="Bowtie2 database", required=True)
 parser.add_argument("-c", "--cpus", type=int, help="Number of CPUs to use", required=True)
 
 args = parser.parse_args()
@@ -85,7 +85,7 @@ print "Total of %d samples" % (entry_count-1)
 
 summary_table = open(args.output_folder + "/summary_table.txt", 'w')
 
-#Run BWA
+#Run Bowtie2
 
 for sample in tara_data:
     print "\n# Processing sample: %s" % sample
@@ -97,21 +97,38 @@ for sample in tara_data:
     fastq_files = list()
     sff_files = list()
 
+    read_check = 0
     for entry in read_xml(tara_data[sample]):
         seq_type, checksum, seq_file = entry
 
         if seq_type == "sff":
             print seq_file
 
-        read_pos = 0
         elif seq_type == "fastq":
-            if read_pos == 0:
-                fastq_files.append[0]
+            if read_check == 1:
+                continue
+
+            read_check += 1 # To avoid reading the same read pair two times
+            read1, read2 = ["ftp://ftp.sra.ebi.ac.uk/vol1/" + fastq[2] for fastq in read_xml(tara_data[sample])]
+
+            output_read1_file = sample_folder + "/" + read1.split("/")[-1]
+            output_read2_file = sample_folder + "/" + read2.split("/")[-1]
+
+            print " ## Downloading file %s \n" % output_read1_file
+            subprocess.call(["wget", read1, "-O", output_read1_file])
+
+            print " ## Downloading file %s \n" % output_read2_file
+            subprocess.call(["wget", read1, "-O", output_read2_file])
+
+            #Run Bowtie2
+
+            #Bajar test de ejemplo
+            #Probar parametros bowtie2
 
 
 
-    #seq_files = [fastq[2] for fastq in read_xml(tara_data[sample])]
-    #print seq_files
+
+
 
     # for entry in read_xml(tara_data[sample]):
     #     seq_type, checksum, seq_file = entry
