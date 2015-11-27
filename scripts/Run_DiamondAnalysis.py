@@ -111,13 +111,19 @@ for sample in tara_data:
         #Download seqs file
         print "## Downloading file %s \n" % file_url
 
-        subprocess.call(["wget", file_url, "-O", output_seq_file])
+        #subprocess.call(["wget", file_url, "-O", output_seq_file])
 
         # Files could be either Fastq or SFF
         if seq_type == "fastq":
 
             base = os.path.basename(output_seq_file)
             file_prefix = os.path.splitext(base)[0]
+            output_diamond = sample_folder + "/" + file_prefix + ".daa"
+            output_tab = sample_folder + "/" + file_prefix + ".m8"
+
+            print file_prefix
+
+
 
 
 
