@@ -115,7 +115,7 @@ for sample in tara_data:
         # Files could be either Fastq or SFF
         if seq_type == "fastq":
 
-            fastq_file = os.path.basename(output_seq_file)
+            fastq_file = sample_folder + "/" + os.path.basename(output_seq_file)
             file_prefix = os.path.splitext(fastq_file)[0]
             output_diamond = sample_folder + "/" + file_prefix + ".daa"
             output_tab = sample_folder + "/" + file_prefix + ".m8"
