@@ -110,7 +110,7 @@ for sample in tara_data:
         #Download seqs file
         print "## Downloading file %s \n" % file_url
 
-        #subprocess.call(["wget", file_url, "-O", output_seq_file])
+        subprocess.call(["wget", file_url, "-O", output_seq_file])
 
         # Files could be either Fastq or SFF
         if seq_type == "fastq":

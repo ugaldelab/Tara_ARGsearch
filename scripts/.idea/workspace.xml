@@ -37,8 +37,8 @@
       <file leaf-file-name="Run_DiamondAnalysis.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Run_DiamondAnalysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.9183673">
-              <caret line="143" column="0" selection-start-line="143" selection-start-column="0" selection-end-line="146" selection-end-column="35" />
+            <state vertical-scroll-proportion="2.617347">
+              <caret line="114" column="44" selection-start-line="114" selection-start-column="44" selection-end-line="114" selection-end-column="44" />
               <folding>
                 <element signature="e#304#339#0" expanded="true" />
               </folding>
@@ -409,7 +409,13 @@
       <option name="project" value="LOCAL" />
       <updated>1448635940081</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Added diamond mapping script">
+      <created>1448647161741</created>
+      <option name="number" value="00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1448647161741</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -492,8 +498,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Run_DiamondAnalysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.9183673">
-          <caret line="143" column="0" selection-start-line="143" selection-start-column="0" selection-end-line="146" selection-end-column="35" />
+        <state vertical-scroll-proportion="2.617347">
+          <caret line="114" column="44" selection-start-line="114" selection-start-column="44" selection-end-line="114" selection-end-column="44" />
           <folding>
             <element signature="e#304#339#0" expanded="true" />
           </folding>
