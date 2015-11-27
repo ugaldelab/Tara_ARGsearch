@@ -38,6 +38,7 @@ def read_xml(ena_url):
     xml_files = list()
 
     for entry in root.iter("FILE"):
+        print entry
         checksum = entry.attrib["checksum"]  # MD5 checksum to verify
         fastq_name = entry.attrib["filename"]  # Name of the file
         file_type = entry.attrib["filetype"]
