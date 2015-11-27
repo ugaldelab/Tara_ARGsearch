@@ -38,7 +38,6 @@ def read_xml(ena_url):
     xml_files = list()
 
     for entry in root.iter("FILE"):
-        print entry
         checksum = entry.attrib["checksum"]  # MD5 checksum to verify
         fastq_name = entry.attrib["filename"]  # Name of the file
         file_type = entry.attrib["filetype"]
@@ -55,7 +54,7 @@ parser = argparse.ArgumentParser(description=program_description)
 parser.add_argument("-i", "--input_table", type=str,
                     help="Input tabular file with the Tara oceans sample", required=True)
 parser.add_argument("-o", "--output_folder", type=str, help="Output folder", required=True)
-parser.add_argument("-d", "--database_to_map", type=str, help="Bowtie2 database", required=True)
+parser.add_argument("-d", "--database", type=str, help="Diamond database", required=True)
 parser.add_argument("-c", "--cpus", type=int, help="Number of CPUs to use", required=True)
 
 args = parser.parse_args()
@@ -116,50 +115,32 @@ for sample in tara_data:
         # Files could be either Fastq or SFF
         if seq_type == "fastq":
 
-            base = os.path.basename(output_seq_file)
-            file_prefix = os.path.splitext(base)[0]
+            fastq_file = os.path.basename(output_seq_file)
+            file_prefix = os.path.splitext(fastq_file)[0]
             output_diamond = sample_folder + "/" + file_prefix + ".daa"
             output_tab = sample_folder + "/" + file_prefix + ".m8"
 
-            print file_prefix
+            #Get the number of reads on the file
+            print "### Counting records\n"
 
+            proc = subprocess.Popen(["wc", "-l", fastq_file], stdout=subprocess.PIPE)
+            line_count = proc.stdout.read()
+            read_count = int(line_count.split()[0])/4
 
+            summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\t")
 
+            #Run diamond
 
+            print "###### Running diamond\n"
 
+            subprocess.call(["diamond", "blastx", "-p", "32", "-q", fastq_file, "-e", "0.00001", "--sensitive",
+                             "-a", output_diamond, "-d", args.database])
 
-        #     fastq_filename = sample_folder + "/" + file_prefix
-        #     output_faa = sample_folder + "/" + file_prefix + ".faa"
-        #     output_hmm = sample_folder + "/" + file_prefix + ".hmmsearch"
-        #     logfile_hmm = sample_folder + "/" + file_prefix + ".logfile"
-        #
-        #     # Get number of reads on the file
-        #     print "#### Counting records\n"
-        #     #read_count = count_fastq_reads(fastq_filename)
-        #
-        #     proc = subprocess.Popen(["wc", "-l", fastq_filename], stdout=subprocess.PIPE)
-        #     output = proc.stdout.read()
-        #
-        #     read_count = int(output.split()[0])/4
-        #     summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\t")
-        #
-        #     # Translate sequences
-        #
-        #     print "#### Running Transeq\n"
-        #     subprocess.call(["transeq", "-sequence", fastq_filename, "-outseq",
-        #                      output_faa, "-frame", "6", "-clean"])
-        #
-        #     # Count proteins
-        #     print "### Counting proteins\n"
-        #     query_count = 'grep -c ">" ' + output_faa
-        #     peptide_count = subprocess.check_output(query_count, shell=True)
-        #     peptide_count = peptide_count.rstrip()
-        #     summary_table.write(str(peptide_count) + "\n")
-        #
-        #     # Run hmmsearch
-        #     print "##### Running HMM searches\n"
-        #     subprocess.call(["hmmsearch", "--cpu", str(args.cpus), "--cut_ga", "--tblout", output_hmm, "-o", logfile_hmm,
-        #                      args.hmm_files, output_faa])
+            subprocess.call(["diamond", "view", "-a", output_diamond, "-o", output_tab])
+
+            # Delete temporal files
+            os.remove(fastq_file)
+            os.remove(output_diamond)
         #
         #     # Delete the files
         #     os.remove(fastq_filename)
