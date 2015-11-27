@@ -13,6 +13,9 @@ import subprocess
 from Bio import SeqIO
 
 
+####USE DIAMOND###
+
+
 def read_xml(ena_url):
     """
     Recieves a plain URL for a nucleotide present in ENA. For example,
