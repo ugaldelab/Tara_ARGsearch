@@ -114,19 +114,24 @@ for sample in tara_data:
 
         # Files could be either Fastq or SFF
         if seq_type == "fastq":
-
+            print "file:", output_seq_file
             base = os.path.basename(output_seq_file)
             file_prefix = os.path.splitext(base)[0]
 
-            fastq_filename = sample_folder + "/" + file_prefix
-            output_faa = sample_folder + "/" + file_prefix + ".faa"
-            output_hmm = sample_folder + "/" + file_prefix + ".hmmsearch"
-            logfile_hmm = sample_folder + "/" + file_prefix + ".logfile"
+            #fastq_filename = sample_folder + "/" + file_prefix
+            #output_faa = sample_folder + "/" + file_prefix + ".faa"
+            #output_hmm = sample_folder + "/" + file_prefix + ".hmmsearch"
+            #logfile_hmm = sample_folder + "/" + file_prefix + ".logfile"
 
             fastq_file = sample_folder + "/" + os.path.basename(output_seq_file)
             file_prefix = os.path.splitext(fastq_file)[0]
             output_diamond = sample_folder + "/" + file_prefix + ".daa"
             output_tab = sample_folder + "/" + file_prefix + ".m8"
+
+            print "base: ", base
+            print "fastq_file ", fastq_file
+            print "file_prefix ", file_prefix
+            print "output_diamond ", output_diamond
 
             #Get the number of reads on the file
             print "### Counting records\n"
