@@ -114,7 +114,7 @@ for sample in tara_data:
         print "## Downloading file %s \n" % file_url
 
         subprocess.call(["wget", file_url, "-O", output_seq_file])
-        print seq_type
+        #print seq_type
 
         # Files could be either Fastq or SFF
         if seq_type == "fastq":
@@ -144,8 +144,8 @@ for sample in tara_data:
             subprocess.call(["diamond", "view", "-a", output_diamond, "-o", output_tab])
 
             # Delete temporal files
-            os.remove(fastq_file)
-            os.remove(output_diamond)
+            #os.remove(fastq_file)
+            #os.remove(output_diamond)
 
         elif seq_type == "sff":
             base = os.path.basename(output_seq_file)
