@@ -164,10 +164,12 @@ for sample in tara_data:
             subprocess.call(["diamond", "blastx", "-p", "32", "-q", sff_fastq_name, "-e", "0.00001", "--sensitive",
                              "-a", output_diamond, "-d", args.database])
 
+            subprocess.call(["diamond", "view", "-a", output_diamond, "-o", output_tab])
+
         # Delete the files
-            #os.remove(output_seq_file)
-            #os.remove(sff_fastq_name)
-            #os.remove(output_diamond)
+            os.remove(output_seq_file)
+            os.remove(sff_fastq_name)
+            os.remove(output_diamond)
 
 
 summary_table.close()
