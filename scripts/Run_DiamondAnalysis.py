@@ -60,6 +60,7 @@ def parse_diamond_results(m8_table):
         # Just taking the top hit
         if read in results:
             continue
+
         else:
             if hit[-4:] == "recA":
                 results["recA"] += 1
