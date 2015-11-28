@@ -144,8 +144,8 @@ for sample in tara_data:
             subprocess.call(["diamond", "view", "-a", output_diamond, "-o", output_tab])
 
             # Delete temporal files
-            #os.remove(fastq_file)
-            #os.remove(output_diamond)
+            os.remove(fastq_file)
+            os.remove(output_diamond)
 
         elif seq_type == "sff":
             base = os.path.basename(output_seq_file)
@@ -165,9 +165,9 @@ for sample in tara_data:
                              "-a", output_diamond, "-d", args.database])
 
         # Delete the files
-            os.remove(output_seq_file)
-            os.remove(sff_fastq_name)
-            os.remove(output_diamond)
+            #os.remove(output_seq_file)
+            #os.remove(sff_fastq_name)
+            #os.remove(output_diamond)
 
 
 summary_table.close()
