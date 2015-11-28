@@ -44,6 +44,11 @@ def read_xml(ena_url):
 
 
 def parse_diamond_results(m8_table):
+    """
+    Used to parse the diamond results
+    :param m8_table:
+    :return:
+    """
 
     results = defaultdict(int)
 
@@ -69,6 +74,40 @@ def parse_diamond_results(m8_table):
 
     return results
 
+
+def get_gene_lengths(input_fasta):
+    """
+    Get the gene lengths for each gene in the fasta file. This is used to get the
+    gene lenghts for the antibiotic database
+
+    :param input_fasta:
+    :return:
+    """
+    lengths = defaultdict(int)
+
+    for seq_record in SeqIO.parse(input_fasta, "fasta"):
+        lengths[seq_record.id] = len(seq_record)
+
+    return lengths
+
+
+def normalize_results(input_results, length, categories):
+
+    results = defaultdict(float)
+
+    recA_length = 1059  # Length of the recA gene
+
+    for entry in input_results:
+        gene_length = length[entry]
+        functions = [value[0] for value in categories[entry]] # List of functions
+
+
+
+
+
+
+    pass
+
 # ---------------- #
 program_description = "Script that runs the read mapping analysis, using BWA"
 
@@ -79,6 +118,8 @@ parser.add_argument("-i", "--input_table", type=str,
 parser.add_argument("-o", "--output_folder", type=str, help="Output folder", required=True)
 parser.add_argument("-d", "--database", type=str, help="Diamond database", required=True)
 parser.add_argument("-c", "--cpus", type=int, help="Number of CPUs to use", required=True)
+parser.add_argument("-g", "--arg_fasta", type=str, help="Fasta file with the ARGs used for search", required=True)
+parser.add_argument("-a", "--arg_categories", type=str, help="File with the ARG categories", required=True)
 
 args = parser.parse_args()
 
@@ -107,13 +148,31 @@ for line in open(args.input_table, 'r'):
 
 print "Total of %d samples" % (entry_count-1)
 
+# Prepare the input dataset of antibiotic genes
+length_arg = get_gene_lengths(args.arg_fasta)
+
+# Read the file with the ARGs categories
+arg_categories = defaultdict(list)
+
+for line in open(args.arg_categories, 'r'):
+    if not line.strip():
+        continue
+
+    line = line.rstrip()
+    gene, function, aro = line.split("\t")
+    arg_categories[gene].append((function, aro))
+
 # Process each file
 
 summary_table = open(args.output_folder + "/summary_table.txt", 'w')
+sample_results = open(args.output_folder + "/sample_results.txt", 'w')
 
 # Run Diamond, and parse results
 
 for sample in tara_data:
+
+    sample_results = defaultdict(int)
+
     print "\n# Processing sample: %s" % sample
 
     # Create output folder
@@ -167,7 +226,8 @@ for sample in tara_data:
             os.remove(fastq_file)
             os.remove(output_diamond)
 
-            print parse_diamond_results(output_tab)
+            for gene, count in parse_diamond_results(output_tab).items():
+                sample_results[gene] += count
 
         elif seq_type == "sff":
             base = os.path.basename(output_seq_file)
@@ -194,7 +254,10 @@ for sample in tara_data:
             os.remove(output_diamond)
 
             # Parse the diamond results
-            print parse_diamond_results(output_tab)
+            for gene, count in parse_diamond_results(output_tab).items():
+                sample_results[gene] += count
 
+    print sample_results
 
 summary_table.close()
+sample_results.close()
