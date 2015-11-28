@@ -143,11 +143,9 @@ for line in open(args.arg_categories, 'r'):
 
     line = line.rstrip()
     gene, function, aro = line.split("\t")
-    gene = gene.rstrip("p01")
-    gene = gene.rstrip("p1")
+    gene = gene.rstrip(".p01")
+    gene = gene.rstrip(".p1")
     arg_categories[gene].append((function, aro))
-
-print arg_categories
 
 # Process each file
 
