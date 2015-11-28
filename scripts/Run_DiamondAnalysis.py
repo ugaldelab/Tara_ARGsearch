@@ -124,7 +124,7 @@ for sample in tara_data:
             #logfile_hmm = sample_folder + "/" + file_prefix + ".logfile"
 
             fastq_file = sample_folder + "/" + os.path.basename(output_seq_file)
-            file_prefix = os.path.splitext(fastq_file)[0]
+            #file_prefix = os.path.splitext(fastq_file)[0]
             output_diamond = sample_folder + "/" + file_prefix + ".daa"
             output_tab = sample_folder + "/" + file_prefix + ".m8"
 
