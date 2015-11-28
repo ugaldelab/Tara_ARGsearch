@@ -147,6 +147,8 @@ for line in open(args.arg_categories, 'r'):
     gene = gene.rstrip("p1")
     arg_categories[gene].append((function, aro))
 
+print arg_categories
+
 # Process each file
 
 summary_table = open(args.output_folder + "/summary_table.txt", 'w')
