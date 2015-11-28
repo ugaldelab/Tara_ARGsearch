@@ -145,7 +145,6 @@ for line in open(args.arg_categories, 'r'):
     gene, function, aro = line.split("\t")
     arg_categories[gene].append((function, aro))
 
-print arg_categories
 # Process each file
 
 summary_table = open(args.output_folder + "/summary_table.txt", 'w')
@@ -250,6 +249,7 @@ for sample in tara_data:
     print sample_results
 
     for entry in sample_results:
+        print arg_categories[entry]
         arg_functions = [value[0] for value in arg_categories[entry]]
         print entry, arg_functions
 
