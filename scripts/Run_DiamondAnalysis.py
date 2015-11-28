@@ -101,7 +101,7 @@ parser.add_argument("-i", "--input_table", type=str,
 parser.add_argument("-o", "--output_folder", type=str, help="Output folder", required=True)
 parser.add_argument("-d", "--database", type=str, help="Diamond database", required=True)
 parser.add_argument("-c", "--cpus", type=int, help="Number of CPUs to use", required=True)
-parser.add_argument("-g", "--arg_fasta", type=str, help="Fasta file with the ARGs used for search", required=True)
+#parser.add_argument("-g", "--arg_fasta", type=str, help="Fasta file with the ARGs used for search", required=True)
 parser.add_argument("-a", "--arg_categories", type=str, help="File with the ARG categories", required=True)
 
 args = parser.parse_args()
@@ -132,7 +132,7 @@ for line in open(args.input_table, 'r'):
 print "Total of %d samples" % (entry_count-1)
 
 # Prepare the input dataset of antibiotic genes
-length_arg = get_gene_lengths(args.arg_fasta)
+#length_arg = get_gene_lengths(args.arg_fasta)
 
 # Read the file with the ARGs categories
 arg_categories = defaultdict(list)
@@ -148,7 +148,7 @@ for line in open(args.arg_categories, 'r'):
 # Process each file
 
 summary_table = open(args.output_folder + "/summary_table.txt", 'w')
-sample_results = open(args.output_folder + "/sample_results.txt", 'w')
+file_sample_results = open(args.output_folder + "/sample_results.txt", 'w')
 
 # Run Diamond, and parse results
 
@@ -241,14 +241,21 @@ for sample in tara_data:
                 sample_results[gene] += count
 
     # Process sample results
-    normalized_results = defaultdict(float)
-    recA_length = 1059
+    raw_sample_results = defaultdict(int)
+    normalized_sample_results = defaultdict(float)
+
+    recA_count = sample_results["recA"]
 
     for entry in sample_results:
-        gene_length = length_arg[entry]
-        functions = [value[0] for value in arg_categories[entry]]
+        arg_functions = [value[0] for value in arg_categories[entry]]
+        for function in arg_functions:
+            raw_sample_results[function] += sample_results[entry]
 
-    print sample_results
+    for entry in raw_sample_results:
+        norm_count = int(raw_sample_results[entry]) / float(recA_count)
+        normalized_sample_results[entry] = norm_count
+
+    print normalized_sample_results
 
 summary_table.close()
-sample_results.close()
+file_sample_results.close()
