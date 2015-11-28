@@ -246,14 +246,21 @@ for sample in tara_data:
 
     recA_count = sample_results["recA"]
 
+    print sample_results
+
     for entry in sample_results:
+        print entry
         arg_functions = [value[0] for value in arg_categories[entry]]
         for function in arg_functions:
             raw_sample_results[function] += sample_results[entry]
+            print function, sample_results[entry]
+
+    print raw_sample_results
 
     for entry in raw_sample_results:
         norm_count = int(raw_sample_results[entry]) / float(recA_count)
         normalized_sample_results[entry] = norm_count
+        print entry, norm_count
 
     print normalized_sample_results
 
