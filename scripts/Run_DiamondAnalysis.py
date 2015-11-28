@@ -265,8 +265,8 @@ for sample in tara_data:
     file_sample_results.flush()
     summary_table.flush()
 
-    os.fsync()
-
+    os.fsync(file_sample_results.fileno())
+    os.fsync(summary_table.fileno())
 
 summary_table.close()
 file_sample_results.close()
