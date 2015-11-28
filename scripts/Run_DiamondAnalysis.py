@@ -55,7 +55,7 @@ def parse_diamond_results(m8_table):
 
         elements = line.split("\t")
         read = elements[0]
-        hit = elements[0]
+        hit = elements[1]
 
         # Just taking the top hit
         if read in results:
