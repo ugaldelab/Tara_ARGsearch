@@ -1,9 +1,8 @@
 """
 This scripts run the read mapping analysis for the Tara oceans samples.
-The approach is to download each sample file, then use Bowtie2 to map the reads to the
-Resfinder database, store the results in a new file, and delete the downloaded sequence.
+The approach is to download each sample file, then use Diamond against the CARD database.
+Also it will compare against a set of recA genes from the FuncGene database.
 
-The output is a bam file for the mapped reads
 """
 
 from collections import defaultdict
@@ -11,9 +10,6 @@ import argparse
 import os
 import subprocess
 from Bio import SeqIO
-
-
-####USE DIAMOND###
 
 
 def read_xml(ena_url):
@@ -46,8 +42,31 @@ def read_xml(ena_url):
 
     return xml_files
 
-def parse_diamond_results():
-    pass
+
+def parse_diamond_results(m8_table):
+
+    results = defaultdict()
+
+    for line in open(m8_table, 'r'):
+        if not line.strip():
+            continue
+
+        line = line.rstrip()
+
+        elements = line.split("\t")
+        read = elements[0]
+        hit = elements[0]
+
+        # Just taking the top hit
+        if read in results:
+            continue
+        else:
+            if hit[-4:] == "recA":
+                results["recA"] += 1
+            else:
+                results[hit] += 1
+
+    return results
 
 # ---------------- #
 program_description = "Script that runs the read mapping analysis, using BWA"
@@ -91,18 +110,18 @@ print "Total of %d samples" % (entry_count-1)
 
 summary_table = open(args.output_folder + "/summary_table.txt", 'w')
 
-#Run Diamond, and parse results
+# Run Diamond, and parse results
 
 for sample in tara_data:
     print "\n# Processing sample: %s" % sample
 
-    #Create output folder
+    # Create output folder
     sample_folder = args.output_folder + "/" + sample
 
     if not os.path.exists(sample_folder):
         os.makedirs(sample_folder)
 
-    #Get the xml file for each entry, get the sequences and run diamond
+    # Get the xml file for each entry, get the sequences and run diamond
     for entry in read_xml(tara_data[sample]):
         seq_type, checksum, seq_file = entry
 
@@ -110,11 +129,11 @@ for sample in tara_data:
 
         file_url = "ftp://ftp.sra.ebi.ac.uk/vol1/" + seq_file
 
-        #Download seqs file
+        # Download seqs file
         print "## Downloading file %s \n" % file_url
 
         subprocess.call(["wget", file_url, "-O", output_seq_file])
-        #print seq_type
+        # print seq_type
 
         # Files could be either Fastq or SFF
         if seq_type == "fastq":
@@ -125,7 +144,7 @@ for sample in tara_data:
             output_diamond = sample_folder + "/" + file_prefix + ".daa"
             output_tab = sample_folder + "/" + file_prefix + ".m8"
 
-            #Get the number of reads on the file
+            # Get the number of reads on the file
             print "### Counting records\n"
 
             proc = subprocess.Popen(["wc", "-l", fastq_file], stdout=subprocess.PIPE)
@@ -134,7 +153,7 @@ for sample in tara_data:
 
             summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\t")
 
-            #Run diamond
+            # Run diamond
 
             print "###### Running diamond\n"
 
@@ -146,6 +165,8 @@ for sample in tara_data:
             # Delete temporal files
             os.remove(fastq_file)
             os.remove(output_diamond)
+
+            print parse_diamond_results(output_tab)
 
         elif seq_type == "sff":
             base = os.path.basename(output_seq_file)
@@ -159,7 +180,7 @@ for sample in tara_data:
             read_count = SeqIO.convert(output_seq_file, "sff", sff_fastq_name, "fastq")
             summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\t")
 
-        #     # Run Diamond
+            # Run Diamond
             print "###### Running diamond\n"
             subprocess.call(["diamond", "blastx", "-p", "32", "-q", sff_fastq_name, "-e", "0.00001", "--sensitive",
                              "-a", output_diamond, "-d", args.database])
@@ -171,38 +192,8 @@ for sample in tara_data:
             os.remove(sff_fastq_name)
             os.remove(output_diamond)
 
+            # Parse the diamond results
+            print parse_diamond_results(output_tab)
+
 
 summary_table.close()
-
-
-#Old bowtie2 code
-    # read_check = 0
-    # for entry in read_xml(tara_data[sample]):
-    #     seq_type, checksum, seq_file = entry
-    #
-    #     if seq_type == "sff":
-    #         print seq_file
-    #
-    #     elif seq_type == "fastq":
-    #         if read_check == 1:
-    #             continue
-    #
-    #         read_check += 1 # To avoid reading the same read pair two times
-    #         read1, read2 = ["ftp://ftp.sra.ebi.ac.uk/vol1/" + fastq[2] for fastq in read_xml(tara_data[sample])]
-    #
-    #         output_read1_file = sample_folder + "/" + read1.split("/")[-1]
-    #         output_read2_file = sample_folder + "/" + read2.split("/")[-1]
-    #
-    #         print " ## Downloading file %s \n" % output_read1_file
-    #         subprocess.call(["wget", read1, "-O", output_read1_file])
-    #
-    #         print " ## Downloading file %s \n" % output_read2_file
-    #         subprocess.call(["wget", read1, "-O", output_read2_file])
-    #
-    #         #Run Bowtie2
-    #
-    #         #Bajar test de ejemplo
-    #         #Probar parametros bowtie2
-
-
-
