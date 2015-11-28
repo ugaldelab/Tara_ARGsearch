@@ -91,23 +91,6 @@ def get_gene_lengths(input_fasta):
     return lengths
 
 
-def normalize_results(input_results, length, categories):
-
-    results = defaultdict(float)
-
-    recA_length = 1059  # Length of the recA gene
-
-    for entry in input_results:
-        gene_length = length[entry]
-        functions = [value[0] for value in categories[entry]] # List of functions
-
-
-
-
-
-
-    pass
-
 # ---------------- #
 program_description = "Script that runs the read mapping analysis, using BWA"
 
@@ -256,6 +239,14 @@ for sample in tara_data:
             # Parse the diamond results
             for gene, count in parse_diamond_results(output_tab).items():
                 sample_results[gene] += count
+
+    # Process sample results
+    normalized_results = defaultdict(float)
+    recA_length = 1059
+
+    for entry in sample_results:
+        gene_length = length_arg[entry]
+        functions = [value[0] for value in arg_categories[entry]]
 
     print sample_results
 
