@@ -45,7 +45,7 @@ def read_xml(ena_url):
 
 def parse_diamond_results(m8_table):
 
-    results = defaultdict()
+    results = defaultdict(int)
 
     for line in open(m8_table, 'r'):
         if not line.strip():
