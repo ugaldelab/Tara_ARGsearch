@@ -249,10 +249,11 @@ for sample in tara_data:
     print sample_results
 
     for entry in sample_results:
-        print entry
         arg_functions = [value[0] for value in arg_categories[entry]]
+        print entry, arg_functions
+
         for function in arg_functions:
-            raw_sample_results[function] += sample_results[entry]
+            raw_sample_results[function] += int(sample_results[entry])
             print function, sample_results[entry]
 
     print raw_sample_results
