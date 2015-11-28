@@ -145,6 +145,7 @@ for line in open(args.arg_categories, 'r'):
     gene, function, aro = line.split("\t")
     arg_categories[gene].append((function, aro))
 
+print arg_categories
 # Process each file
 
 summary_table = open(args.output_folder + "/summary_table.txt", 'w')
