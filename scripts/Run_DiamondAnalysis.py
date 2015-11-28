@@ -114,24 +114,12 @@ for sample in tara_data:
 
         # Files could be either Fastq or SFF
         if seq_type == "fastq":
-            print "file:", output_seq_file
             base = os.path.basename(output_seq_file)
             file_prefix = os.path.splitext(base)[0]
 
-            #fastq_filename = sample_folder + "/" + file_prefix
-            #output_faa = sample_folder + "/" + file_prefix + ".faa"
-            #output_hmm = sample_folder + "/" + file_prefix + ".hmmsearch"
-            #logfile_hmm = sample_folder + "/" + file_prefix + ".logfile"
-
             fastq_file = sample_folder + "/" + os.path.basename(output_seq_file)
-            #file_prefix = os.path.splitext(fastq_file)[0]
             output_diamond = sample_folder + "/" + file_prefix + ".daa"
             output_tab = sample_folder + "/" + file_prefix + ".m8"
-
-            print "base: ", base
-            print "fastq_file ", fastq_file
-            print "file_prefix ", file_prefix
-            print "output_diamond ", output_diamond
 
             #Get the number of reads on the file
             print "### Counting records\n"
@@ -154,46 +142,28 @@ for sample in tara_data:
             # Delete temporal files
             os.remove(fastq_file)
             os.remove(output_diamond)
-        #
-        #     # Delete the files
-        #     os.remove(fastq_filename)
-        #     os.remove(output_faa)
-        #
-        # elif seq_type == "sff":
-        #     base = os.path.basename(output_seq_file)
-        #     file_prefix = os.path.splitext(base)[0].split(".")[0]
-        #
-        #     sff_fastq_name = sample_folder + "/" + file_prefix + ".fastq"
-        #     output_faa = sample_folder + "/" + file_prefix + ".faa"
-        #     output_hmm = sample_folder + "/" + file_prefix + ".hmmsearch"
-        #     logfile_hmm = sample_folder + "/" + file_prefix + ".logfile"
-        #
-        #     # Get number of read on the file
-        #     print "### Converting sff file\n"
-        #     read_count = SeqIO.convert(output_seq_file, "sff", sff_fastq_name, "fastq")
-        #     summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\t")
-        #
-        #     # Translate the sequences
-        #     print "#### Running Transeq\n"
-        #     subprocess.call(["transeq", "-sequence", sff_fastq_name, "-outseq",
-        #                      output_faa, "-frame", "6", "-clean"])
-        #
-        #     # Count proteins
-        #     print "### Counting proteins\n"
-        #     query_count = 'grep -c ">" ' + output_faa
-        #     peptide_count = subprocess.check_output(query_count, shell=True)
-        #     peptide_count = peptide_count.rstrip()
-        #     summary_table.write(str(peptide_count) + "\n")
-        #
-        #     # Run hmmsearch
-        #     print "##### Running HMM searches\n"
-        #     subprocess.call(["hmmsearch", "--cpu", str(args.cpus), "--cut_ga", "--tblout", output_hmm, "-o", logfile_hmm,
-        #                      args.hmm_files, output_faa])
-        #
-        #     # Delete the files
-        #     os.remove(output_seq_file)
-        #     os.remove(sff_fastq_name)
-        #     os.remove(output_faa)
+
+        elif seq_type == "sff":
+            base = os.path.basename(output_seq_file)
+            file_prefix = os.path.splitext(base)[0].split(".")[0]
+            sff_fastq_name = sample_folder + "/" + file_prefix + ".fastq"
+            output_diamond = sample_folder + "/" + file_prefix + ".daa"
+            output_tab = sample_folder + "/" + file_prefix + ".m8"
+
+            # Get number of read on the file
+            print "### Converting sff file\n"
+            read_count = SeqIO.convert(output_seq_file, "sff", sff_fastq_name, "fastq")
+            summary_table.write(sample + "\t" + file_prefix + "\t" + str(read_count) + "\t")
+
+        #     # Run Diamond
+            print "###### Running diamond\n"
+            subprocess.call(["diamond", "blastx", "-p", "32", "-q", sff_fastq_name, "-e", "0.00001", "--sensitive",
+                             "-a", output_diamond, "-d", args.database])
+
+        # Delete the files
+            os.remove(output_seq_file)
+            os.remove(sff_fastq_name)
+            os.remove(output_diamond)
 
 
 summary_table.close()
