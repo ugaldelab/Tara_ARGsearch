@@ -46,6 +46,9 @@ def read_xml(ena_url):
 
     return xml_files
 
+def parse_diamond_results():
+    pass
+
 # ---------------- #
 program_description = "Script that runs the read mapping analysis, using BWA"
 
@@ -111,6 +114,7 @@ for sample in tara_data:
         print "## Downloading file %s \n" % file_url
 
         subprocess.call(["wget", file_url, "-O", output_seq_file])
+        print seq_type
 
         # Files could be either Fastq or SFF
         if seq_type == "fastq":
