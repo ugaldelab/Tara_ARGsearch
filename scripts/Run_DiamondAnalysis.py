@@ -255,7 +255,12 @@ for sample in tara_data:
             raw_sample_results[function] += int(sample_results[entry])
 
     for entry in raw_sample_results:
-        norm_count = int(raw_sample_results[entry]) / float(recA_count)
+
+        try:
+            norm_count = int(raw_sample_results[entry]) / float(recA_count)
+        except ZeroDivisionError:
+            norm_count = int(raw_sample_results[entry]) / float(1)
+
         normalized_sample_results[entry] = norm_count
 
     file_sample_results.write("#" + sample + "\n")
